@@ -6,51 +6,42 @@ import { faCircleRight } from "@fortawesome/free-solid-svg-icons";
 
 const Main = () => {
   const history = useHistory();
-  const days = ["월", "화", "수", "목", "금", "토", "일"];
+  let days = ["일", "월", "화", "수", "목", "금", "토"];
 
-  const rate = days.map((day, idx) => {
-    return {
-      day: day,
-      rate: Math.floor(Math.random() * 5 - 1 + 1),
-    };
-  });
+  const rate = Array.from({ length: 7 }, (rate) => {
+    return (
+        Math.floor(Math.random() * 5)
+    );
+  })
+
+  //(+)오늘 기준 요일 정렬
+  const numDay = new Date().getDay();
+  let cutDay = days.splice(0, numDay);
+  days = days.concat(cutDay);
+
 
   return (
     <Back>
       <Content>
-        <h2 style={{ color: "#A0937D", fontWeight: "bolder" }}>
-          나의 일주일은?
-        </h2>
+        <h2>나의 일주일은?</h2>
         {rate.map((day, idx) => {
           return (
-            <Item>
-              <Day key={`days${idx}`}>{day.day}</Day>
-              {Array.from({ length: 5 }, (round, idx) => {
+            <Item key={`days${idx}`}>
+              <Day idx={idx}>{days[idx]}</Day>
+              {Array.from({ length: 5 }, (_, idx) => {
                 return (
-                  <div
+                  <Circle
                     key={idx}
-                    style={{
-                      backgroundColor: idx > day.rate ? "#FFF5EB" : "#E3CDC1",
-                      width: "25px",
-                      height: "25px",
-                      margin: "0 10px",
-                      borderRadius: "50%",
-                    }}
-                  ></div>
+                    idx={idx} day={day}
+                  ></Circle>
                 );
               })}
               <FontAwesomeIcon
                 icon={faCircleRight}
                 className="nextBtn"
-                style={{
-                  marginLeft: "10px",
-                  fontSize: "23px",
-                  color: "#9E9D89",
-                }}
                 onClick={() => {
-                  history.push(`/detail/${day.day}`);
+                  history.push(`/detail/${days[idx]}`);
                 }}
-                
               />
             </Item>
           );
@@ -59,6 +50,7 @@ const Main = () => {
     </Back>
   );
 };
+
 
 const Back = styled.div`
   display: flex;
@@ -77,6 +69,13 @@ const Content = styled.div`
   align-items: center;
   padding: 60px 40px;
   height: 400px;
+  width : 300px;
+  min-width : 300px;
+
+  h2 {
+    color: #A0937D;
+    font-weight: bolder;
+  }
 `;
 
 const Item = styled.div`
@@ -86,6 +85,12 @@ const Item = styled.div`
   justify-content: center;
   alignitems: center;
 
+  .nextBtn {
+    margin-left: 10px;
+    font-size: 23px;
+    color: #9E9D89;
+  }
+
   .nextBtn:hover{
       cursor : pointer;
   }
@@ -93,8 +98,16 @@ const Item = styled.div`
 
 const Day = styled.div`
   font-weight: bolder;
-  color: #b4846c;
   font-size: 20px;
+  color : ${(props) => (props.idx === 0 ? "tomato" : "#b4846c")};
+`;
+
+const Circle = styled.div`
+  background-color: ${(props) => (props.idx > props.day ? "#FFF5EB" : "#E3CDC1")};
+  width: 25px;
+  height: 25px;
+  margin: 0 10px;
+  border-radius: 50%;
 `;
 
 export default Main;
